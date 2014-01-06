@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B860646A-13A2-47D9-9790-4719A91BF35B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>S22.Sasl</RootNamespace>
+    <AssemblyName>S22.Sasl</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\S22.Sasl.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Mechanisms\ByteBuilder.cs" />
+    <Compile Include="Mechanisms\Ntlm\Extensions.cs" />
+    <Compile Include="Mechanisms\Ntlm\Flags.cs" />
+    <Compile Include="Mechanisms\Ntlm\Helpers.cs" />
+    <Compile Include="Mechanisms\Ntlm\MD4.cs" />
+    <Compile Include="Mechanisms\Ntlm\MessageType.cs" />
+    <Compile Include="Mechanisms\Ntlm\OSVersion.cs" />
+    <Compile Include="Mechanisms\Ntlm\Responses.cs" />
+    <Compile Include="Mechanisms\Ntlm\SecurityBuffer.cs" />
+    <Compile Include="Mechanisms\Ntlm\Type1Message.cs" />
+    <Compile Include="Mechanisms\Ntlm\Type2Message.cs" />
+    <Compile Include="Mechanisms\Ntlm\Type3Message.cs" />
+    <Compile Include="Mechanisms\SaslCramMd5.cs" />
+    <Compile Include="Mechanisms\SaslDigestMd5.cs" />
+    <Compile Include="Mechanisms\SaslNtlm.cs" />
+    <Compile Include="Mechanisms\SaslNtlmv2.cs" />
+    <Compile Include="Mechanisms\SaslOAuth.cs" />
+    <Compile Include="Mechanisms\SaslOAuth2.cs" />
+    <Compile Include="Mechanisms\SaslPlain.cs" />
+    <Compile Include="Mechanisms\SaslScramSha1.cs" />
+    <Compile Include="Mechanisms\SaslSrp.cs" />
+    <Compile Include="Mechanisms\Srp\ClientMessage1.cs" />
+    <Compile Include="Mechanisms\Srp\ClientMessage2.cs" />
+    <Compile Include="Mechanisms\Srp\Extensions.cs" />
+    <Compile Include="Mechanisms\Srp\Helper.cs" />
+    <Compile Include="Mechanisms\Srp\Mpi.cs" />
+    <Compile Include="Mechanisms\Srp\OctetSequence.cs" />
+    <Compile Include="Mechanisms\Srp\ServerMessage1.cs" />
+    <Compile Include="Mechanisms\Srp\ServerMessage2.cs" />
+    <Compile Include="Mechanisms\Srp\Utf8String.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaslConfiguration.cs" />
+    <Compile Include="SaslException.cs" />
+    <Compile Include="SaslFactory.cs" />
+    <Compile Include="SaslMechanism.cs" />
+    <Compile Include="Tests\CramMd5Test.cs" />
+    <Compile Include="Tests\DigestMd5Test.cs" />
+    <Compile Include="Tests\NtlmTest.cs" />
+    <Compile Include="Tests\OAuth2Test.cs" />
+    <Compile Include="Tests\PlainTest.cs" />
+    <Compile Include="Tests\ScramSha1Test.cs" />
+    <Compile Include="Tests\SrpTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="License.md" />
+    <None Include="Readme.md" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
