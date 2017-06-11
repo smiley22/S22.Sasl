@@ -1,18 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace S22.Sasl {
 	/// <summary>
 	/// A factory class for producing instances of Sasl mechanisms.
 	/// </summary>
-	internal static class SaslFactory {
+	public static class SaslFactory {
 		/// <summary>
 		/// A dictionary of Sasl mechanisms registered with the factory class.
 		/// </summary>
-		static Dictionary<string, Type> Mechanisms {
+		static Dictionary<string, Type> mechanisms {
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// A list of the names of all available mechanisms.
+        /// </summary>
+        public static IEnumerable<string> Mechanisms {
+            get {
+                return mechanisms.Keys;
+            }
+        }
 
 		/// <summary>
 		/// Creates an instance of the Sasl mechanism with the specified
@@ -26,11 +36,11 @@ namespace S22.Sasl {
 		/// specified name is not registered with Sasl.SaslFactory.</exception>
 		public static SaslMechanism Create(string name) {
 			name.ThrowIfNull("name");
-			if (!Mechanisms.ContainsKey(name)) {
+			if (!mechanisms.ContainsKey(name)) {
 				throw new SaslException("A Sasl mechanism with the specified name " +
 					"is not registered with Sasl.SaslFactory.");
 			}
-			Type t = Mechanisms[name];
+			Type t = mechanisms[name];
 			object o = Activator.CreateInstance(t, true);
 			return o as SaslMechanism;
 		}
@@ -57,7 +67,7 @@ namespace S22.Sasl {
 					"of Sasl.SaslMechanism");
 			}
 			try {
-				Mechanisms.Add(name, t);
+                mechanisms.Add(name, t);
 			} catch (Exception e) {
 				throw new SaslException("Registration of Sasl mechanism failed.", e);
 			}
@@ -67,17 +77,26 @@ namespace S22.Sasl {
 		/// Static class constructor. Initializes static properties.
 		/// </summary>
 		static SaslFactory() {
-			Mechanisms = new Dictionary<string, Type>(
-				StringComparer.InvariantCultureIgnoreCase);
-
-			// Could be moved to App.config to support SASL "plug-in" mechanisms.
-			var list = new Dictionary<string, Type>() {
-				{ "PLAIN", typeof(Sasl.Mechanisms.SaslPlain) },
-				{ "DIGEST-MD5", typeof(Sasl.Mechanisms.SaslDigestMd5) },
-				{ "SCRAM-SHA-1", typeof(Sasl.Mechanisms.SaslScramSha1) },
-			};
-			foreach (string key in list.Keys)
-				Mechanisms.Add(key, list[key]);
+            mechanisms = new Dictionary<string, Type>(
+                StringComparer.InvariantCultureIgnoreCase) {
+                { "Plain", typeof(Mechanisms.SaslPlain) },
+                { "Cram-Md5", typeof(Mechanisms.SaslCramMd5) },
+                { "Digest-Md5", typeof(Mechanisms.SaslDigestMd5) },
+                { "Scram-Sha-1", typeof(Mechanisms.SaslScramSha1) },
+                { "Ntlm", typeof(Mechanisms.SaslNtlm) },
+                { "Ntlmv2", typeof(Mechanisms.SaslNtlmv2) },
+                { "OAuth", typeof(Mechanisms.SaslOAuth) },
+                { "OAuth2", typeof(Mechanisms.SaslOAuth2) },
+                { "Srp", typeof(Mechanisms.SaslSrp) }
+            };            
+            // Register any custom mechanisms configured in the app.config.
+            var configSection = ConfigurationManager.GetSection("saslConfigSection")
+                as SaslConfigurationSection;
+            if (configSection != null) {                
+                foreach(SaslProvider provider in configSection.SaslProviders) {
+                    mechanisms.Add(provider.Name, Type.GetType(provider.Type));
+                }
+            }
 		}
 	}
 }

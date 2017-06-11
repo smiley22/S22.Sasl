@@ -11,7 +11,7 @@ namespace S22.Sasl {
 		/// saslProvider elements.
 		/// </summary>
 		[ConfigurationProperty("saslProviders", IsRequired = false,
-			IsKey = false, IsDefaultCollection = true)]
+			IsKey = false, IsDefaultCollection = false)]
 		public SaslProviderCollection SaslProviders {
 			get {
 				return ((SaslProviderCollection) base["saslProviders"]);
