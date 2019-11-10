@@ -79,6 +79,20 @@ namespace S22.Sasl.Mechanisms {
 		}
 
 		/// <summary>
+		/// The protocol to use.  If none is specified, this
+		/// implementation uses "imap".
+		/// </summary>
+		string Protocol {
+			get {
+				return Properties.ContainsKey("Protocol") ?
+					Properties["Protocol"] as string : null;
+			}
+			set {
+				Properties["Protocol"] = value;
+			}
+		}
+
+		/// <summary>
 		/// Private constructor for use with Sasl.SaslFactory.
 		/// </summary>
 		private SaslDigestMd5() {
@@ -151,7 +165,10 @@ namespace S22.Sasl.Mechanisms {
 			// Parse the challenge-string and construct the "response-value" from it.
 			string decoded = Encoding.ASCII.GetString(challenge);
 			NameValueCollection fields = ParseDigestChallenge(decoded);
-			string digestUri = "imap/" + fields["realm"];
+			string protocol = Protocol;
+			if (string.IsNullOrEmpty(protocol))
+				protocol = "imap";
+			string digestUri = protocol + "/" + fields["realm"];
 			string responseValue = ComputeDigestResponseValue(fields, Cnonce, digestUri,
 				Username, Password);
 
