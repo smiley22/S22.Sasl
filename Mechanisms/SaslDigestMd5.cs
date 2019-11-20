@@ -79,6 +79,20 @@ namespace S22.Sasl.Mechanisms {
 		}
 
 		/// <summary>
+		/// The protocol to use.  If none is specified, this
+		/// implementation uses "imap".
+		/// </summary>
+		string Protocol {
+			get {
+				return Properties.ContainsKey("Protocol") ?
+					Properties["Protocol"] as string : null;
+			}
+			set {
+				Properties["Protocol"] = value;
+			}
+		}
+
+		/// <summary>
 		/// Private constructor for use with Sasl.SaslFactory.
 		/// </summary>
 		private SaslDigestMd5() {
@@ -151,9 +165,21 @@ namespace S22.Sasl.Mechanisms {
 			// Parse the challenge-string and construct the "response-value" from it.
 			string decoded = Encoding.ASCII.GetString(challenge);
 			NameValueCollection fields = ParseDigestChallenge(decoded);
-			string digestUri = "imap/" + fields["realm"];
+			string protocol = Protocol;
+			if (string.IsNullOrEmpty(protocol))
+				protocol = "imap";
+			string digestUri = protocol + "/" + fields["realm"];
 			string responseValue = ComputeDigestResponseValue(fields, Cnonce, digestUri,
 				Username, Password);
+
+			// RFC 2831 says that qop is optional, and Java's SASL
+			// impl chokes on empty directives.  Let's specify the
+			// default, which is 'auth'.
+			//
+			// javax.security.sasl.SaslException: Valueless directive found: qop
+			string qop = fields["qop"];
+			if (string.IsNullOrEmpty(qop))
+				qop = "auth";
 
 			// Create the challenge-response string.
 			string[] directives = new string[] {
@@ -166,7 +192,7 @@ namespace S22.Sasl.Mechanisms {
 				"cnonce=" + Dquote(Cnonce),
 				"digest-uri=" + Dquote(digestUri),
 				"response=" + responseValue,
-				"qop=" + fields["qop"]
+				"qop=" + qop
 			};
 			string challengeResponse = String.Join(",", directives);
 			// Finally, return the response as a byte array.
@@ -229,10 +255,14 @@ namespace S22.Sasl.Mechanisms {
 					cnonce;
 				// Construct A2.
 				string A2 = "AUTHENTICATE:" + digestUri;
-				if (!"auth".Equals(challenge["qop"]))
+				string qop = challenge["qop"];
+				// RFC 2831: If not present, [qop] defaults to "auth".
+				if (string.IsNullOrEmpty(qop))
+					qop = "auth";
+				if (!"auth".Equals(qop))
 					A2 = A2 + ":00000000000000000000000000000000";
 				string ret = MD5(A1, enc) + ":" + challenge["nonce"] + ":" + ncValue +
-					":" + cnonce + ":" + challenge["qop"] + ":" + MD5(A2, enc);
+					":" + cnonce + ":" + qop + ":" + MD5(A2, enc);
 				return MD5(ret, enc);
 			}
 		}
